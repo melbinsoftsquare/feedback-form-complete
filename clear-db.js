@@ -10,11 +10,11 @@ const connectDb = () => {
     })
 }
 
-const createFeedbackTable = () => {
+const dropTable = () => {
     return new Promise((resolve, reject) => {
-        client.query('CREATE TABLE IF NOT EXISTS feedback (id SERIAL PRIMARY KEY, name VARCHAR(50), email VARCHAR(50), phone VARCHAR(50), feedback TEXT, created_at TIMESTAMP WITH TIME ZONE default CURRENT_TIMESTAMP);', (err, result) => {
+        client.query('drop table if exists feedback;', (err, result) => {
             if(!!err === false) {
-                console.log('Table Feedback created successfully!');
+                console.log('Table Feedback deleted successfully!');
                 resolve();
             } else {
                 reject(err);
@@ -29,7 +29,7 @@ const terminateConnection = () => {
 
 const executeDb = () => {
     connectDb()
-    .then(createFeedbackTable)
+    .then(dropTable)
     .then(terminateConnection)
     .then(() => console.log('Db Execution completed.'))
     .catch(err => {

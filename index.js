@@ -4,6 +4,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
+const service = require('./service');
 
 // The port address used to listen for Web Requests. The default is set as 4000.
 const port = process.env.PORT || 4000;
@@ -24,7 +25,33 @@ app.use(bodyParser.json())
 // Submit feedback forms
 app.post('/feedback', (req, res) => {
     console.log(res.body);
+    service.createFeedback(res.body);
     res.send('feedback recieved.');
+});
+
+// View all submitted feedbacks
+app.get('/submited-feedbacks', (req, res) => {
+
+});
+
+// Pagination for feedback
+app.get('/submited-feedbacks/:start', (req, res) => {
+    
+});
+
+// View a single feedbacks
+app.get('/view-feedback/:feedbackId', (req, res) => {
+
+})
+
+// Delete a feedback
+app.get('/delete/:feedbackId', (req, res) => {
+
+});
+
+// Delete All Feedbacks
+app.get('/delete-all', (req, res) => {
+
 });
 
 // Send the initital page to the browser
