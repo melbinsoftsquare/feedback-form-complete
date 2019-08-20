@@ -31,7 +31,7 @@ app.post('/feedback', (req, res) => {
 
 // View all submitted feedbacks
 app.get('/submited-feedbacks', (req, res) => {
-
+    service.getFeedbacks(req.param.page);
 });
 
 // Pagination for feedback
@@ -56,7 +56,7 @@ app.get('/delete-all', (req, res) => {
 
 // Send the initital page to the browser
 app.use('/', (req, res) => {
-    res.render('home');
+    res.render('submit-form');
 });
 
 // Make the application to listen for web requests
