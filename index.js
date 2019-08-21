@@ -24,28 +24,51 @@ app.use(bodyParser.json())
 
 // Submit feedback forms
 app.post('/feedback', (req, res) => {
-    console.log(res.body);
-    service.createFeedback(res.body);
-    res.send('feedback recieved.');
-});
-
-// View all submitted feedbacks
-app.get('/submited-feedbacks', (req, res) => {
-    service.getFeedbacks(req.param.page);
-});
-
-// Pagination for feedback
-app.get('/submited-feedbacks/:start', (req, res) => {
+    service.createFeedback(req.body)
+    .then(() => {
+        res.send('feedback recieved.');
+    })
+    .catch((err) => {
+        console.log(err);
+        res.send('feedback creation failed');
+    });
     
 });
 
-// View a single feedbacks
-app.get('/view-feedback/:feedbackId', (req, res) => {
+// View all submitted feedbacks
+app.get('/view-feedbacks', (req, res) => {
+    let page = req.query.page;
+    page = page || 1;
+    service.getFeedbacks(page)
+    .then((result) => {
+        let hasNextPage = false;
+        if (result.length > 10) {
+            hasNextPage = true;
+            result.splice(10, 1);
+        }
+        res.render('view-feedback-list', {feedbacks: result, hasNextPage: hasNextPage, hasPreviousPage: page > 1, prevPage: parseInt(page) - 1, nextPage: parseInt(page) + 1, page: page});
+    });
+});
 
+// View a single feedbacks
+app.get('/view-feedback', (req, res) => {
+    let feedbackId = req.query.feedbackId;
+    if(isNaN(parseInt(feedbackId)) === false) {
+        service.getFeedback(feedbackId)
+        .then((result) => {
+            res.render('view-feedback', {feedback: result});
+        })
+        .catch(err => {
+            console.log(err);
+            res.send(err);
+        });
+    } else {
+        res.send('Feedback Id should be valid.');
+    }
 })
 
 // Delete a feedback
-app.get('/delete/:feedbackId', (req, res) => {
+app.get('/delete', (req, res) => {
 
 });
 

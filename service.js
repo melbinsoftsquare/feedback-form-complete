@@ -33,35 +33,42 @@ const createFeedback = (feedback) => {
                 if(!!err === false) {
                     resolve();
                 } else {
-                    reject(err);
+                    reject(err.message);
                 }
         });
     });
 }
 
-const getFeedbacks = (start) => {
-    start = start || 0;
-    start = start < 0 ? 0 : start;
+const getFeedbacks = (page) => {
+    page = page || 1;
+    page -= 1;
+    page = page < 0 ? 0 : page;
     let limit = 10;
+    let start = page * limit;
+    limit += 1;
+
     return new Promise((resolve, reject) => {
+        console.log('querying with', start, limit);
         client.query('SELECT id, name, email, phone, feedback FROM feedback LIMIT $1 OFFSET $2',
         [limit, start],
         (err, result) => {
             if (!!err === false) {
-                resolve(result);
+                resolve(result.rows);
+            } else {
+                reject(err.message);
             }
-            reject(err);
         });
     });
 }
 
 const getFeedback = (feedbackId) => {
     return new Promise((resolve, reject) => {
-        client.query('SELECT id, name, email, phone, feedback, created_at FROM feedback where id = $1', [feedbackId], (err, result) => {
+        client.query('SELECT id, name, email, phone, feedback, created_at FROM feedback where id = $1::Integer', [feedbackId], (err, result) => {
             if (!!err === false) {
-                resolve(result);
+                console.log(result.rows[0]);
+                resolve(result.rows[0]);
             } else {
-                reject(err);
+                reject(err.message);
             }
         })
     });
@@ -69,11 +76,11 @@ const getFeedback = (feedbackId) => {
 
 const deleteFeedback = (feedbackId) => {
     return new Promise((resolve, reject) => {
-        client.query('DELETE FROM feedback where feedbackId = $1', [feedbackId], (err, resilt) => {
+        client.query('DELETE FROM feedback where feedbackId = $1::Integer', [feedbackId], (err, resilt) => {
             if (!!err === false) {
                 resolve(result);
             } else {
-                reject(err);
+                reject(err.message);
             }
         });
     });
